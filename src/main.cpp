@@ -94,7 +94,7 @@ int main() {
                 break;
               }
             }
-          } else {
+
             std::cout << arguments << ": not found\n";
           }
         }
