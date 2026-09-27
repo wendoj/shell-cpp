@@ -74,12 +74,21 @@ int main() {
             std::stringstream ss(path_env);
             std::string directory;
 
+            // Iterate through every directory in PATH
             while (std::getline(ss, directory, ':')) {
               const std::filesystem::path candidate_path =
                   std::filesystem::path(directory) / std::string(arguments);
 
-              // Check if the file exists and if it has execute permissions
-              if (std::filesystem::exists(candidate_path) && std::filesystem::status(candidate_path).permissions() == std::filesystem::perms::owner_exec) {
+              // Check if the file exists and has any execute permission bit set
+              constexpr std::filesystem::perms execute_bits =
+                  std::filesystem::perms::owner_exec |
+                  std::filesystem::perms::group_exec |
+                  std::filesystem::perms::others_exec;
+
+              if (std::filesystem::exists(candidate_path) &&
+                  (std::filesystem::status(candidate_path).permissions() &
+                   execute_bits) !=
+                      std::filesystem::perms::none) {
                 std::cout << arguments << " is " << candidate_path.string()
                           << '\n';
                 break;
