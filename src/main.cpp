@@ -5,6 +5,7 @@
 enum class Command {
   exit,
   echo,
+  type,
   unknown
 };
 
@@ -24,8 +25,17 @@ int main() {
       break;
     } else if (input.substr(0, 5) == "echo ") {
       std::cout << input.substr(5) << '\n';
-    } else {
-      std::cout << input << ": command not found" << '\n';
+    } else if (input.substr(0, 5) == "type ") {
+      std::string type { input.substr(5) };
+
+      if (type == "echo" || type == "type" || type == "exit") {
+        std::cout << type << 'is a shell builtin\n';
+      } else {
+        std::cout << type << ': not found\n';
+      }
+    }
+    else {
+      std::cout << input << ": command not found\n";
     }
   }
 }
