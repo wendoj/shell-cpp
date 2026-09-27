@@ -1,13 +1,44 @@
 #include <iostream>
 #include <string>
-#include <functional>
+#include <string_view>
+#include <algorithm>
+#include <vector>
+#include <cstdlib>
+#include <filesystem>
+#include <sstream>
 
 enum class Command {
-  exit,
-  echo,
-  type,
-  unknown
+  Exit,
+  Echo,
+  Type,
+  Unknown
 };
+
+Command parse_command(std::string_view input) {
+  const std::size_t separator = input.find(' ');
+  const std::string_view name = input.substr(0, separator);
+
+  if (name == "exit") {
+    return Command::Exit;
+  }
+  if (name == "echo") {
+    return Command::Echo;
+  }
+  if (name == "type") {
+    return Command::Type;
+  }
+  return Command::Unknown;
+}
+
+bool is_builtin(std::string_view name) {
+  static const std::vector<std::string_view> builtins {
+      "echo",
+      "type",
+      "exit"
+  };
+
+  return std::find(builtins.begin(), builtins.end(), name) != builtins.end();
+}
 
 int main() {
   // Flush after every std::cout / std:cerr
@@ -19,23 +50,49 @@ int main() {
 
     // Get the user's input
     std::string input;
-    std::getline(std::cin, input);
-
-    if (input == "exit") {
+    if (!std::getline(std::cin, input)) {
       break;
-    } else if (input.substr(0, 5) == "echo ") {
-      std::cout << input.substr(5) << '\n';
-    } else if (input.substr(0, 5) == "type ") {
-      std::string type { input.substr(5) };
-
-      if (type == "echo" || type == "type" || type == "exit") {
-        std::cout << type << " is a shell builtin\n";
-      } else {
-        std::cout << type << ": not found\n";
-      }
     }
-    else {
-      std::cout << input << ": command not found\n";
+
+    const std::size_t separator = input.find(' ');
+    const std::string_view arguments =
+        separator == std::string::npos
+            ? std::string_view {}
+            : std::string_view(input).substr(separator + 1);
+
+    switch (parse_command(input)) {
+      case Command::Exit:
+        return 0;
+      case Command::Echo:
+        std::cout << arguments << '\n';
+        break;
+      case Command::Type:
+        if (is_builtin(arguments)) {
+          std::cout << arguments << " is a shell builtin\n";
+        } else {
+          if (const char* path_env = std::getenv("PATH"); path_env != nullptr) {
+            std::stringstream ss(path_env);
+            std::string directory;
+
+            while (std::getline(ss, directory, ':')) {
+              const std::filesystem::path candidate_path =
+                  std::filesystem::path(directory) / std::string(arguments);
+
+              // Check if the file exists and if it has execute permissions
+              if (std::filesystem::exists(candidate_path) && std::filesystem::status(candidate_path).permissions() == std::filesystem::perms::owner_exec) {
+                std::cout << arguments << " is " << candidate_path.string()
+                          << '\n';
+                break;
+              }
+            }
+          } else {
+            std::cout << arguments << ": not found\n";
+          }
+        }
+        break;
+      case Command::Unknown:
+        std::cout << input << ": command not found\n";
+        break;
     }
   }
 }
