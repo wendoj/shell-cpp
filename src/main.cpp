@@ -29,9 +29,9 @@ int main() {
       std::string type { input.substr(5) };
 
       if (type == "echo" || type == "type" || type == "exit") {
-        std::cout << type << 'is a shell builtin\n';
+        std::cout << type << " is a shell builtin\n";
       } else {
-        std::cout << type << ': not found\n';
+        std::cout << type << ": not found\n";
       }
     }
     else {
