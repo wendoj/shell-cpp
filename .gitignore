@@ -923,6 +923,10 @@ FodyWeavers.xsd
 **/build/
 !src/**/build/
 
+# CodeCrafters
+.codecrafters
+codecrafters.yml
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
