@@ -64,6 +64,10 @@ void Shell::handle_external(const ParsedCommand& command) {
   run_process(*executable, process_arguments);
 }
 
+void Shell::handle_pwd() {
+  std::cout << std::getenv("PWD") << "\n";
+}
+
 int Shell::run() {
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
@@ -85,6 +89,9 @@ int Shell::run() {
         break;
       case CommandType::Type:
         handle_type(command.arguments);
+        break;
+      case CommandType::Pwd:
+        handle_pwd();
         break;
       case CommandType::External:
         handle_external(command);

@@ -12,7 +12,8 @@ class Shell {
  private:
   void handle_echo(const std::vector<std::string>& arguments) const;
   void handle_type(const std::vector<std::string>& arguments) const;
-  void handle_external(const ParsedCommand& command);
+  static void handle_external(const ParsedCommand& command);
+  static void handle_pwd();
 
-  static constexpr std::string_view builtins[] = {"echo", "type", "exit"};
+  static constexpr std::string_view builtins[] = {"echo", "type", "pwd", "exit"};
 };
