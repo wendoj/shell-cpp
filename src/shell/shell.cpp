@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-void Shell::handle_echo(const std::vector<std::string>& arguments) const {
+void Shell::handle_echo(const std::vector<std::string>& arguments) {
   for (std::size_t index = 0; index < arguments.size(); ++index) {
     if (index > 0) {
       std::cout << ' ';
@@ -20,7 +20,7 @@ void Shell::handle_echo(const std::vector<std::string>& arguments) const {
   std::cout << '\n';
 }
 
-void Shell::handle_type(const std::vector<std::string>& arguments) const {
+void Shell::handle_type(const std::vector<std::string>& arguments) {
   if (arguments.empty()) {
     std::cout << "type: missing argument\n";
     return;
@@ -68,6 +68,16 @@ void Shell::handle_pwd() {
   std::cout << std::getenv("PWD") << "\n";
 }
 
+void Shell::handle_cd(const std::vector<std::string> &arguments) {
+  std::filesystem::path directory_path = arguments.front();
+
+  if (std::filesystem::exists(directory_path)) {
+    std::filesystem::current_path(directory_path);
+  } else {
+    std::cout << "cd: " << directory_path.string() << ": No such file or directory\n";
+  }
+}
+
 int Shell::run() {
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
@@ -92,6 +102,9 @@ int Shell::run() {
         break;
       case CommandType::Pwd:
         handle_pwd();
+        break;
+      case CommandType::Cd:
+        handle_cd(command.arguments);
         break;
       case CommandType::External:
         handle_external(command);

@@ -4,6 +4,12 @@
 #include <sstream>
 #include <string>
 
+std::optional<std::filesystem::path> find_directory(const std::filesystem::path& path) {
+    std::filesystem::path directory(path);
+
+    return directory;
+}
+
 std::optional<std::filesystem::path> find_executable(
     std::string_view command,
     std::string_view path_env) {

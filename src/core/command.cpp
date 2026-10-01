@@ -26,6 +26,8 @@ ParsedCommand parse_command(std::string_view input) {
     type = CommandType::Type;
   } else if (name == "pwd") {
     type = CommandType::Pwd;
+  } else if (name == "cd") {
+    type = CommandType::Cd;
   }
 
   words.erase(words.begin());

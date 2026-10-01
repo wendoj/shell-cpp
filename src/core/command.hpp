@@ -9,6 +9,7 @@ enum class CommandType {
   Echo,
   Type,
   Pwd,
+  Cd,
   External,
 };
 
