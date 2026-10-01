@@ -65,7 +65,7 @@ void Shell::handle_external(const ParsedCommand& command) {
 }
 
 void Shell::handle_pwd() {
-  std::cout << std::getenv("PWD") << "\n";
+  std::cout << std::filesystem::current_path().string() << "\n";
 }
 
 void Shell::handle_cd(const std::vector<std::string> &arguments) {
