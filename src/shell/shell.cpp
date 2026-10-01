@@ -71,6 +71,11 @@ void Shell::handle_pwd() {
 void Shell::handle_cd(const std::vector<std::string> &arguments) {
   std::filesystem::path directory_path = arguments.front();
 
+  if (directory_path.string() == "~") {
+    const std::filesystem::path home_path = std::getenv("HOME");
+    return std::filesystem::current_path(home_path);
+  }
+
   if (std::filesystem::exists(directory_path)) {
     std::filesystem::current_path(directory_path);
   } else {
